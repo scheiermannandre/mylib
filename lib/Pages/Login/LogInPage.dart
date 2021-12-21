@@ -1,7 +1,11 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:mylib/GenericClasses/Constants.dart';
+import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
+
+import 'package:mylib/GenericClasses/GlobalUserProperties.dart';
+import 'package:mylib/GenericClasses/HttpClient.dart';
+import 'package:mylib/Pages/Dialogs/AuthMessageDlg.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -74,7 +78,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         const SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: Globals.boxDecorationStyle,
+          decoration: GlobalStyleProperties.boxDecorationStyle,
           height: 60.0,
           child: child,
         ),
@@ -86,7 +90,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return Text(
       text,
       style: const TextStyle(
-        color: Globals.detailAndTextColor,
+        color: GlobalStyleProperties.detailAndTextColor,
         fontFamily: 'OpenSans',
         fontSize: 30.0,
         fontWeight: FontWeight.bold,
@@ -100,21 +104,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         controller: emailText,
         keyboardType: TextInputType.emailAddress,
         style: const TextStyle(
-          color: Globals.mainColor,
+          color: GlobalStyleProperties.mainColor,
           fontFamily: 'OpenSans',
         ),
         decoration: const InputDecoration(
           border: InputBorder.none,
           prefixIcon: Icon(
             Icons.email,
-            color: Globals.mainColor,
+            color: GlobalStyleProperties.mainColor,
           ),
           prefixIconConstraints: BoxConstraints(
             minWidth: 60,
             minHeight: 48,
           ),
           hintText: 'Enter your Email',
-          hintStyle: Globals.hintTextStyle,
+          hintStyle: GlobalStyleProperties.hintTextStyle,
         ),
       ),
     );
@@ -126,21 +130,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         controller: passText,
         obscureText: true,
         style: const TextStyle(
-          color: Globals.mainColor,
+          color: GlobalStyleProperties.mainColor,
           fontFamily: 'OpenSans',
         ),
         decoration: const InputDecoration(
           border: InputBorder.none,
           prefixIcon: Icon(
             Icons.lock,
-            color: Globals.mainColor,
+            color: GlobalStyleProperties.mainColor,
           ),
           prefixIconConstraints: BoxConstraints(
             minWidth: 60,
             minHeight: 48,
           ),
           hintText: 'Enter your Password',
-          hintStyle: Globals.hintTextStyle,
+          hintStyle: GlobalStyleProperties.hintTextStyle,
         ),
       ),
     );
@@ -151,9 +155,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       alignment: Alignment.center,
       child: TextButton(
         onPressed: () => print('Forgot Password Button Pressed'),
-        child: const Text(
-          'Forgot Password?',
-          style: Globals.textStyle,
+        child: Container(
+          padding: const EdgeInsets.only(
+            bottom: 5, // Space between underline and text
+          ),
+          decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: GlobalStyleProperties.mainColor,
+            width: 1.0, // Underline thickness
+          ))),
+          child: const Text(
+            'Forgot Password?',
+            style: GlobalStyleProperties.textStyle,
+          ),
         ),
       ),
     );
@@ -170,11 +185,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Globals.mainColor,
+        color: GlobalStyleProperties.mainColor,
         child: const Text(
           'LOGIN',
           style: TextStyle(
-            color: Globals.detailAndTextColor,
+            color: GlobalStyleProperties.detailAndTextColor,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -186,47 +201,52 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Future<void> _tryLogin() async {
-    // if (emailText.text == "admin" && passText.text == "000") {
-    //   Navigator.pushNamed(context, '/home');
-    // } else {
-    //   int userId = await HttpCall.postLoginData(emailText.text, passText.text);
-    //   if (userId == -2) {
-    //     authMessageDlg(
-    //         context, 'No connection to server... \n😑', "Try again later!");
-    //   } else if (userId == -1) {
-    //     authMessageDlg(context, "Username or Password invalid.", "Try Again!");
-    //   } else {
-    //     Navigator.pushNamed(context, '/home', arguments: userId);
-    //     GlobalVariables.userId = userId;
-    //   }
-    // }
+    if (emailText.text == "admin" && passText.text == "000") {
+      Navigator.pushNamed(context, '/home');
+    } else {
+      int userId = await HttpCall.postLoginData(emailText.text, passText.text);
+      if (userId == -2) {
+        AuthMessageDlg(
+            context, 'No connection to server... \n😑', "Try again later!");
+      } else if (userId == -1) {
+        AuthMessageDlg(context, "Username or Password invalid.", "Try Again!");
+      } else {
+        Navigator.pushNamed(context, '/home', arguments: userId);
+        GlobalUserProperties.UserId = userId;
+      }
+    }
   }
 
   Widget _buildSignupBtn() {
     return GestureDetector(
       onTap: () => {},
-      child: RichText(
-        text: const TextSpan(
-          children: [
-            TextSpan(
-              text: 'Don\'t have an Account? ',
-              style: TextStyle(
-                color: Globals.detailAndTextColor,
-                fontSize: 18.0,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            TextSpan(
-              text: 'Sign Up',
-              style: TextStyle(
-                color: Globals.detailAndTextColor,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Container(
+          padding: const EdgeInsets.only(
+            bottom: 5, // Space between underline and text
+          ),
+          child: const Text(
+            'Don\'t have an Account?',
+            style: GlobalStyleProperties.textStyle,
+          ),
         ),
-      ),
+        const Padding(padding: EdgeInsets.fromLTRB(2.5, 0, 2.5, 0)),
+        Container(
+          padding: const EdgeInsets.only(
+            bottom: 5, // Space between underline and text
+          ),
+          decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: GlobalStyleProperties.mainColor,
+            width: 1.0, // Underline thickness
+          ))),
+          child: const Text(
+            'SignUp?',
+            style: GlobalStyleProperties.textStyle,
+          ),
+        ),
+      ]),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mylib/Pages/Login/LoginPage.dart';
-import 'GenericClasses/Constants.dart';
+import 'GenericClasses/GlobalStyleProperties.dart';
 
 //bool value = false;
 void main() async {
@@ -19,13 +19,14 @@ class MyApp extends StatelessWidget {
     // value = false;
     return MaterialApp(
       theme: ThemeData(
-        canvasColor: Globals.subColor,
+        canvasColor: GlobalStyleProperties.subColor,
         buttonBarTheme: const ButtonBarThemeData(
           alignment: MainAxisAlignment.center,
         ),
         dividerColor: Colors.transparent,
         colorScheme: ColorScheme.fromSwatch().copyWith(
-            secondary: Globals.mainColor, brightness: Brightness.light),
+            secondary: GlobalStyleProperties.mainColor,
+            brightness: Brightness.light),
       ),
       title: "MyLibrary",
       //initialRoute: '/',

@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 
-class Globals {
-  static const Color mainColor = const Color.fromARGB(255, 48, 176, 99);
-  static const Color subColor = const Color.fromARGB(255, 59, 60, 59);
+class GlobalStyleProperties {
+  static const Color mainColor = Color.fromARGB(255, 48, 176, 99);
+  static const Color subColor = Color.fromARGB(255, 59, 60, 59);
   static const Color detailAndTextColor = Colors.white;
   static const Color errorColor = Colors.red;
   static const hintTextStyle = TextStyle(
