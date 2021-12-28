@@ -219,7 +219,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => {},
+      onTap: () => {Navigator.pushReplacementNamed(context, '/signup')},
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Container(
           padding: const EdgeInsets.only(
@@ -242,7 +242,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             width: 1.0, // Underline thickness
           ))),
           child: const Text(
-            'SignUp?',
+            'SignUp!',
             style: GlobalStyleProperties.textStyle,
           ),
         ),

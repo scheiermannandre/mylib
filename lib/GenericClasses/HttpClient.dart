@@ -4,10 +4,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:mylib/GenericClasses/GlobalUserProperties.dart';
-import 'BookClasses/Book.dart';
 
 class HttpCall {
-  static String ipAddressDB = "http://192.168.0.6:5000/";
+  static String ipAddressDB = "http://192.168.0.6:5000";
   // static Future<List<Book>> getBooksGoogle(String search) async {
   //   List<Book> books = [];
   //   http.Response jsonResponse = await http.get(
@@ -32,7 +31,12 @@ class HttpCall {
       Map<String, dynamic> loginDataMap = {};
       loginDataMap["user"] = requestBody;
       String loginData = encoder.convert(loginDataMap);
-      final jsonResponse = await http.post(ipAddressDB + "login",
+
+      final jsonResponse = await http.post(
+          Uri.https(
+            ipAddressDB,
+            "/login",
+          ),
           body: loginData,
           headers: {
             "accept": "application/json",
@@ -63,7 +67,11 @@ class HttpCall {
       Map<String, dynamic> registrationDataMap = {};
       registrationDataMap["user"] = requestBody;
       String registrationData = encoder.convert(registrationDataMap);
-      final jsonResponse = await http.post(ipAddressDB + "register",
+      final jsonResponse = await http.post(
+          Uri.https(
+            ipAddressDB,
+            "/register",
+          ),
           body: registrationData,
           headers: {
             "accept": "application/json",
@@ -88,11 +96,13 @@ class HttpCall {
   static Future getBookDB(int index) async {
     try {
       final jsonResponse = await http.get(
-          ipAddressDB +
-              "books/" +
-              GlobalUserProperties.UserId.toString() +
-              "/" +
-              index.toString(),
+          Uri.https(
+            ipAddressDB,
+            "/books/" +
+                GlobalUserProperties.UserId.toString() +
+                "/" +
+                index.toString(),
+          ),
           headers: {
             "accept": "application/json",
             "content-type": "application/json"
@@ -110,7 +120,10 @@ class HttpCall {
   static Future getLibraryCountDB() async {
     try {
       final jsonResponse = await http.get(
-          ipAddressDB + "libcount/" + GlobalUserProperties.UserId.toString(),
+          Uri.https(
+            ipAddressDB,
+            "/libcount/" + GlobalUserProperties.UserId.toString(),
+          ),
           headers: {
             "accept": "application/json",
             "content-type": "application/json"

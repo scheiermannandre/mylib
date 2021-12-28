@@ -1,7 +1,5 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
-import 'dart:convert';
-
 import 'package:mylib/GenericClasses/BookClasses/BookDTO.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/EmptyBookParameterException.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/InvalidBookParameterException.dart';
