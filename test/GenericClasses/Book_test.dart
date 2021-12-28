@@ -10,6 +10,7 @@ import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateLibrary
 import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateWishlist.dart';
 import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingState.dart';
 import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingStateNotStarted.dart';
+import 'dart:convert';
 
 void main() {
   group('Constructing Book', () {
@@ -21,18 +22,19 @@ void main() {
     String imageLink = "imageLink";
     ReadingState readingState = ReadingStateNotStarted();
     OwningState owningState = OwningStateWishlist();
-    test("Test - Building via valid builder", () {
-      final Book book = BookBuilder()
-          .setId(id)
-          .setTitle(title)
-          .setSubTitle(subTitle)
-          .setAuthor(author)
-          .setDescription(description)
-          .setImageLink(imageLink)
-          .setReadingState(readingState)
-          .setOwningState(owningState)
-          .buildBook();
 
+    final Book book = BookBuilder()
+        .setId(id)
+        .setTitle(title)
+        .setSubTitle(subTitle)
+        .setAuthor(author)
+        .setDescription(description)
+        .setImageLink(imageLink)
+        .setReadingState(readingState)
+        .setOwningState(owningState)
+        .buildBook();
+
+    test("Test - Building via valid builder", () {
       expect(id, book.id);
       expect(title, book.title);
       expect(subTitle, book.subTitle);
@@ -55,18 +57,7 @@ void main() {
           throwsA(const TypeMatcher<EmptyBookParameterException>()));
     });
     test("Test - Building via Copy-Constructor", () {
-      final Book refBook = BookBuilder()
-          .setId(id)
-          .setTitle(title)
-          .setSubTitle(subTitle)
-          .setAuthor(author)
-          .setDescription(description)
-          .setImageLink(imageLink)
-          .setReadingState(readingState)
-          .setOwningState(owningState)
-          .buildBook();
-
-      final bookCopy = Book.fromBook(refBook);
+      final bookCopy = Book.fromBook(book);
       expect(id, bookCopy.id);
       expect(title, bookCopy.title);
       expect(subTitle, bookCopy.subTitle);
@@ -75,6 +66,70 @@ void main() {
       expect(imageLink, bookCopy.imageLink);
       expect(readingState, bookCopy.readingState);
       expect(owningState, bookCopy.owningState);
+    });
+
+    test("Test - Building from JsonDB", () {
+      Map<String, dynamic> bookJson = jsonDecode(
+          "{\"Id\":1,\"Title\":\"BookTest\",\"SubTitle\":\"The API Testing\"," +
+              "\"Author\":\"Me\",\"Description\":\"Testing the Library API\"," +
+              "\"ImageLink\":\"https://notavailable.de\",\"ReadingState\":\"ReadingStateNotStarted\",\"OwningState\":\"OwningStateWishlist\"}");
+      final bookFromJson = Book.fromJsonDB(bookJson);
+      expect(bookJson["Id"], bookFromJson.id);
+      expect(bookJson["Title"], bookFromJson.title);
+      expect(bookJson["SubTitle"], bookFromJson.subTitle);
+      expect(bookJson["Author"], bookFromJson.author);
+      expect(bookJson["Description"], bookFromJson.description);
+      expect(bookJson["ImageLink"], bookFromJson.imageLink);
+      expect(bookJson["ReadingState"], bookFromJson.readingState.toString());
+      expect(bookJson["OwningState"], bookFromJson.owningState.toString());
+    });
+
+    test("Test - Building from JsonDB Invalid Id", () {
+      Map<String, dynamic> bookJson = jsonDecode(
+          "{\"Id\":0,\"Title\":\"BookTest\",\"SubTitle\":\"The API Testing\"," +
+              "\"Author\":\"Me\",\"Description\":\"Testing the Library API\"," +
+              "\"ImageLink\":\"https://notavailable.de\",\"ReadingState\":\"ReadingStateNotStarted\",\"OwningState\":\"OwningStateWishlist\"}");
+      expect(() => Book.fromJsonDB(bookJson),
+          throwsA(const TypeMatcher<InvalidBookParameterException>()));
+      bookJson["Id"] = -1;
+      expect(() => Book.fromJsonDB(bookJson),
+          throwsA(const TypeMatcher<InvalidBookParameterException>()));
+    });
+
+    test("Test - Building from JsonDB Id is NULL", () {
+      Map<String, dynamic> bookJson = jsonDecode(
+          "{\"Title\":\"BookTest\",\"SubTitle\":\"The API Testing\"," +
+              "\"Author\":\"Me\",\"Description\":\"Testing the Library API\"," +
+              "\"ImageLink\":\"https://notavailable.de\",\"ReadingState\":\"ReadingStateNotStarted\",\"OwningState\":\"OwningStateWishlist\"}");
+      expect(() => Book.fromJsonDB(bookJson),
+          throwsA(const TypeMatcher<InvalidBookParameterException>()));
+    });
+
+    test("Test - Building from JsonDB title is NULL", () {
+      Map<String, dynamic> bookJson = jsonDecode(
+          "{\"Id\":0,\"SubTitle\":\"The API Testing\"," +
+              "\"Author\":\"Me\",\"Description\":\"Testing the Library API\"," +
+              "\"ImageLink\":\"https://notavailable.de\",\"ReadingState\":\"ReadingStateNotStarted\",\"OwningState\":\"OwningStateWishlist\"}");
+      expect(() => Book.fromJsonDB(bookJson),
+          throwsA(const TypeMatcher<InvalidBookParameterException>()));
+    });
+
+    test("Test - Building from JsonDB nullable parameter are NULL", () {
+      Map<String, dynamic> bookJson =
+          jsonDecode("{\"Id\":1,\"Title\":\"BookTest\"}");
+
+      final Book bookFromJson = Book.fromJsonDB(bookJson);
+
+      expect(bookJson["Id"], bookFromJson.id);
+      expect(bookJson["Title"], bookFromJson.title);
+      expect(null, bookFromJson.subTitle);
+      expect(null, bookFromJson.author);
+      expect(null, bookFromJson.description);
+      expect(null, bookFromJson.imageLink);
+      expect(ReadingStateNotStarted().runtimeType,
+          bookFromJson.readingState.runtimeType);
+      expect(OwningStateWishlist().runtimeType,
+          bookFromJson.owningState.runtimeType);
     });
   });
 }

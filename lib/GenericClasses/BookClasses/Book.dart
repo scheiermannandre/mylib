@@ -1,37 +1,31 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, non_constant_identifier_names
 
+import 'dart:convert';
+
+import 'package:mylib/GenericClasses/BookClasses/BookDTO.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/EmptyBookParameterException.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/InvalidBookParameterException.dart';
 import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningState.dart';
 import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateWishlist.dart';
 import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingState.dart';
 import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingStateNotStarted.dart';
+import 'package:mylib/GenericClasses/StaticMethodsClass.dart';
 
 /// Class to represent an instance of a book.
 class Book {
   late int id = 0;
   late String title = "";
-  late String subTitle = "";
-  late String author = "";
-  late String description = "";
-  late String imageLink = "";
+  late String? subTitle = "";
+  late String? author = "";
+  late String? description = "";
+  late String? imageLink = "";
   late ReadingState readingState = ReadingStateNotStarted();
   late OwningState owningState = OwningStateWishlist();
 
-  ///Builder Constructor creates an inctance of Book depending on the [builder]
-  ///[InvalidBookParameterException] if Id not greater 0!
-  ///[EmptyBookParameterException] if Title is empty!
+  ///Builder Constructor creates an inctance of Book depending on the [builder].
+  ///Throws [InvalidBookParameterException] if Id not greater 0!
+  ///Throws [EmptyBookParameterException] if Title is empty!
   Book._builder(BookBuilder builder) {
-    if (builder._id <= 0) {
-      throw InvalidBookParameterException(
-          "Id must be greater 0!", "id", builder._id.toString());
-    }
-    if (builder._title.isEmpty) {
-      throw EmptyBookParameterException(
-        "Title must not be empty!",
-        "title",
-      );
-    }
     id = builder._id;
     title = builder._title;
     subTitle = builder._subTitle;
@@ -40,9 +34,10 @@ class Book {
     imageLink = builder._imageLink;
     readingState = builder._readingState;
     owningState = builder._owningState;
+    ValidateParameter();
   }
 
-  /// Copy-Constructor creating a copied instance of a book.
+  /// Copy-Constructor creating a copied instance of a [book].
   Book.fromBook(Book book) {
     id = book.id;
     title = book.title;
@@ -52,17 +47,83 @@ class Book {
     imageLink = book.imageLink;
     readingState = book.readingState;
     owningState = book.owningState;
+    ValidateParameter();
   }
 
+  /// Constructor for creating a Book instance based on the Json fetched from the DB!
   Book.fromJsonDB(Map<String, dynamic> bookJson) {
-    id = bookJson['Id'];
-    title = bookJson['Title'];
-    subTitle = bookJson['Subtitle'];
+    int? tmpId = bookJson['Id'];
+    String? tmpTitle = bookJson['Title'];
+    String? tmpReadingState = bookJson['ReadingState'];
+    String? tmpOwningState = bookJson['OwningState'];
+    id = StaticMethods.IsNull(tmpId)
+        ? throw InvalidBookParameterException(
+            "Fetched book-Json from DB doesn't contain a Id", "Id", "NULL")
+        : tmpId!.toInt();
+    title = StaticMethods.IsNull(tmpTitle)
+        ? throw InvalidBookParameterException(
+            "Fetched book-Json from DB doesn't contain a title",
+            "Title",
+            "NULL")
+        : tmpTitle.toString();
+    subTitle = bookJson['SubTitle'];
     author = bookJson['Author'];
     description = bookJson['Description'];
-    imageLink = bookJson['Imagelink'];
-    readingState = bookJson['ReadingState'];
-    owningState = bookJson['OwningState'];
+    imageLink = bookJson['ImageLink'];
+    readingState = StaticMethods.IsNull(tmpReadingState)
+        ? readingState
+        : ReadingState.SetReadingStateFromString(tmpReadingState.toString());
+    owningState = StaticMethods.IsNull(tmpOwningState)
+        ? owningState
+        : OwningState.SetOwningStateFromString(tmpOwningState.toString());
+    ValidateParameter();
+  }
+
+  BookDTO ExtractBookDTO() {
+    BookDTO bookDTO = BookDTO();
+    bookDTO.id = id;
+    bookDTO.title = title;
+    bookDTO.subTitle = subTitle;
+    bookDTO.author = author;
+    bookDTO.description = description;
+    bookDTO.imageLink = imageLink;
+    bookDTO.readingState = readingState.toString();
+    bookDTO.owningState = owningState.toString();
+
+    return bookDTO;
+  }
+
+  void ValidateParameter() {
+    if (id <= 0) {
+      throw InvalidBookParameterException(
+          "Id must be greater 0!", "id", id.toString());
+    }
+    if (title.isEmpty) {
+      throw EmptyBookParameterException(
+        "Title must not be empty!",
+        "title",
+      );
+    }
+  }
+
+  void SetOwningStateLibrary() {
+    owningState.AddToLibrary(this);
+  }
+
+  void SetOwningStateWishlist() {
+    owningState.AddToWishlist(this);
+  }
+
+  void SetReadingStateNotStarted() {
+    readingState.ChangeState(this);
+  }
+
+  void SetReadingStateReading() {
+    readingState.ChangeState(this);
+  }
+
+  void SetReadingStateFinished() {
+    readingState.ChangeState(this);
   }
 }
 
