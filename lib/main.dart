@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mylib/PageChangingManagement/RouteGenerator.dart';
 import 'package:mylib/Pages/Login/LoginPage.dart';
+import 'package:mylib/Pages/Login/SignUpPage.dart';
 import 'GenericClasses/GlobalStyleProperties.dart';
 
 //bool value = false;
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       title: "MyLibrary",
       //initialRoute: '/login',
-      home: const LoginPage(),
+      home: SignUpPage(),
       //home: value == true ? HomePage() : LoginScreen(), //LoginPage(),
       onGenerateRoute: RouteGenerator.generateRoute,
     );

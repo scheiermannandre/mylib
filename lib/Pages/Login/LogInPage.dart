@@ -6,6 +6,8 @@ import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
 import 'package:mylib/GenericClasses/GlobalUserProperties.dart';
 import 'package:mylib/GenericClasses/HttpClient.dart';
 import 'package:mylib/Pages/Dialogs/AuthMessageDlg.dart';
+import 'package:mylib/UIComponents/EmailInputField.dart';
+import 'package:mylib/UIComponents/PasswordInputField.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -60,8 +62,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
             ),
             _buildText("SignIn"),
-            _buildEmailTF(),
-            _buildPasswordTF(),
+            EmailInputField(),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
+            PasswordInputField(),
             _buildLoginBtn(),
             _buildSignupBtn(),
             _buildForgotPasswordBtn(),
@@ -94,58 +97,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         fontFamily: 'OpenSans',
         fontSize: 30.0,
         fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildEmailTF() {
-    return _buildCommonScaffold(
-      TextField(
-        controller: emailText,
-        keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(
-          color: GlobalStyleProperties.mainColor,
-          fontFamily: 'OpenSans',
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          prefixIcon: Icon(
-            Icons.email,
-            color: GlobalStyleProperties.mainColor,
-          ),
-          prefixIconConstraints: BoxConstraints(
-            minWidth: 60,
-            minHeight: 48,
-          ),
-          hintText: 'Enter your Email',
-          hintStyle: GlobalStyleProperties.hintTextStyle,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordTF() {
-    return _buildCommonScaffold(
-      TextField(
-        controller: passText,
-        obscureText: true,
-        style: const TextStyle(
-          color: GlobalStyleProperties.mainColor,
-          fontFamily: 'OpenSans',
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          prefixIcon: Icon(
-            Icons.lock,
-            color: GlobalStyleProperties.mainColor,
-          ),
-          prefixIconConstraints: BoxConstraints(
-            minWidth: 60,
-            minHeight: 48,
-          ),
-          hintText: 'Enter your Password',
-          hintStyle: GlobalStyleProperties.hintTextStyle,
-        ),
       ),
     );
   }

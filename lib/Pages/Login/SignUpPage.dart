@@ -3,15 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
-import 'package:mylib/GenericClasses/HttpClient.dart';
-import 'package:mylib/Pages/Dialogs/AuthMessageDlg.dart';
-// import 'package:my_library/Classes/HttpCall.dart';
-// import 'package:my_library/Pages/AuthMessageDlg.dart';
-// import 'package:my_library/Constants.dart';
+import 'package:mylib/UIComponents/EmailInputField.dart';
+import 'package:mylib/UIComponents/PasswordInputValidationField.dart';
 
 class SignUpPage extends StatefulWidget {
-  //TabController tabController;
-
   bool hasMinLength = false;
   bool hasDigits = false;
   bool hasUppercase = false;
@@ -22,7 +17,6 @@ class SignUpPage extends StatefulWidget {
 
   SignUpPage({
     Key? key,
-    //required this.tabController,
   }) : super(key: key);
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -31,9 +25,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passTextController = TextEditingController();
-  TextEditingController repeatPassTextController = TextEditingController();
   final FocusNode focusNodePasswordTF = FocusNode();
-  final FocusNode focusNodeRepeatPasswordTF = FocusNode();
 
   @override
   void initState() {
@@ -41,15 +33,11 @@ class _SignUpPageState extends State<SignUpPage> {
     focusNodePasswordTF.addListener(() {
       setState(() {});
     });
-    focusNodeRepeatPasswordTF.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
   void dispose() {
     focusNodePasswordTF.dispose();
-    focusNodeRepeatPasswordTF.dispose();
     super.dispose();
   }
 
@@ -80,185 +68,15 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget _buildEmailTF() {
-    return _buildCommonScaffold(
-      TextField(
-        controller: emailTextController,
-        keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(
-          color: GlobalStyleProperties.mainColor,
-          fontFamily: 'OpenSans',
-        ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          prefixIcon: Icon(
-            Icons.email,
-            color: GlobalStyleProperties.mainColor,
-          ),
-          prefixIconConstraints: BoxConstraints(
-            minWidth: 60,
-            minHeight: 48,
-          ),
-          hintText: 'Enter your Email',
-          hintStyle: GlobalStyleProperties.hintTextStyle,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSubTile(String text, bool fulfilled) {
-    Color color = fulfilled == false
-        ? GlobalStyleProperties.errorColor
-        : GlobalStyleProperties.mainColor;
-    Icon icon = Icon(
-      fulfilled == false ? Icons.cancel_outlined : Icons.check_circle_outline,
-      color: color,
-      size: 16,
-    );
-    return SizedBox(
-      height: 50,
-      child: ListTile(
-        minVerticalPadding: 0,
-        contentPadding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
-        dense: true,
-        leading: icon,
-        title: Transform.translate(
-          offset: const Offset(-17, 0),
-          child: Text(
-            text,
-            style:
-                TextStyle(color: color, fontFamily: 'OpenSans', fontSize: 13),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _passwordTextChanged(TextEditingController enteredPassword,
-      TextEditingController repeatedPassword) {
-    if (enteredPassword.text.isNotEmpty) {
-      if (enteredPassword.text[enteredPassword.text.length - 1] == " ") {
-        enteredPassword.text = enteredPassword.text.trimRight();
-        enteredPassword.selection = TextSelection.fromPosition(
-            TextPosition(offset: enteredPassword.text.length));
+  void _passwordTextChanged() {
+    if (passTextController.text.isNotEmpty) {
+      if (passTextController.text[passTextController.text.length - 1] == " ") {
+        passTextController.text = passTextController.text.trimRight();
+        passTextController.selection = TextSelection.fromPosition(
+          TextPosition(offset: passTextController.text.length),
+        );
       }
     }
-    if (enteredPassword.text != repeatedPassword.text) {
-      widget.passwordMatch = false;
-    } else {
-      widget.passwordMatch = true;
-    }
-  }
-
-  void _repeatPasswordTextChanged(TextEditingController enteredPassword,
-      TextEditingController repeatedPassword) {
-    if (repeatedPassword.text.isNotEmpty) {
-      if (repeatedPassword.text[repeatedPassword.text.length - 1] == " ") {
-        repeatedPassword.text = repeatedPassword.text.trimRight();
-        repeatedPassword.selection = TextSelection.fromPosition(
-            TextPosition(offset: repeatedPassword.text.length));
-      }
-    }
-  }
-
-  List<Widget> _buildPasswordExtensionTile() {
-    return <Widget>[
-      _buildSubTile('You need at least 10 Characters', widget.hasMinLength),
-      _buildSubTile(
-          'You need at least one uppercase Letter', widget.hasUppercase),
-      _buildSubTile(
-          'You need at least one lowercase Letter', widget.hasLowerCase),
-      _buildSubTile('You need at least one Number', widget.hasDigits),
-      _buildSubTile('You need at least one Special Character',
-          widget.hasSpecialCharacters),
-    ];
-  }
-
-  List<Widget> _buildRepeatPasswordExtensionTile(
-      TextEditingController enteredPassword,
-      TextEditingController repeatedPassword) {
-    return <Widget>[
-      _buildSubTile(
-          'The passwords need to match and fulfill the format',
-          widget.passwordMatch &&
-              widget.passwordFormatValid &&
-              (enteredPassword.text == repeatPassTextController.text &&
-                  enteredPassword.text != "")),
-    ];
-  }
-
-  Widget _buildPassword(TextEditingController enteredPassword,
-      TextEditingController repeatedPassword, bool mainPasswordField) {
-    Color color;
-    TextStyle style;
-    if (mainPasswordField) {
-      if (widget.passwordFormatValid) {
-        color = GlobalStyleProperties.mainColor;
-        style = GlobalStyleProperties.hintTextStyle;
-      } else {
-        color = GlobalStyleProperties.errorColor;
-        style = GlobalStyleProperties.hintTextStyleOnError;
-      }
-    } else {
-      if (widget.passwordMatch) {
-        color = GlobalStyleProperties.mainColor;
-        style = GlobalStyleProperties.hintTextStyle;
-      } else {
-        color = GlobalStyleProperties.errorColor;
-        style = GlobalStyleProperties.hintTextStyleOnError;
-      }
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30.0),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
-          expandedCrossAxisAlignment: CrossAxisAlignment.center,
-          backgroundColor: GlobalStyleProperties.detailAndTextColor,
-          collapsedBackgroundColor: GlobalStyleProperties.detailAndTextColor,
-          title: TextField(
-            focusNode: mainPasswordField
-                ? focusNodePasswordTF
-                : focusNodeRepeatPasswordTF,
-            onChanged: (text) {
-              //Hier kommt Überprüfung rein, ob das Passwortformat eingehalten wurde
-              setState(() {
-                if (mainPasswordField) {
-                  _passwordTextChanged(enteredPassword, repeatedPassword);
-                } else {
-                  _repeatPasswordTextChanged(enteredPassword, repeatedPassword);
-                }
-              });
-            },
-            controller: mainPasswordField ? enteredPassword : repeatedPassword,
-            obscureText: false,
-            style: TextStyle(
-              color: color,
-              fontFamily: 'OpenSans',
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              prefixIcon: Icon(
-                Icons.lock,
-                color: color,
-              ),
-              prefixIconConstraints: const BoxConstraints(
-                minWidth: 60,
-                minHeight: 48,
-              ),
-              hintText: 'Enter a Password',
-              hintStyle: style,
-            ),
-          ),
-          children: mainPasswordField
-              ? _buildPasswordExtensionTile()
-              : _buildRepeatPasswordExtensionTile(
-                  enteredPassword, repeatedPassword),
-        ),
-      ),
-    );
   }
 
   Widget _buildRegisterBtn() {
@@ -290,29 +108,29 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _tryRegister() async {
     //FocusScope.of(context).unfocus();
 
-    if (passTextController.text == repeatPassTextController.text &&
-        passTextController.text.isNotEmpty &&
-        widget.passwordFormatValid &&
-        widget.passwordMatch) {
-      int userId = await HttpCall.postRegistrationData(
-          emailTextController.text, passTextController.text);
+    // if (passTextController.text == repeatPassTextController.text &&
+    //     passTextController.text.isNotEmpty &&
+    //     widget.passwordFormatValid &&
+    //     widget.passwordMatch) {
+    //   int userId = await HttpCall.postRegistrationData(
+    //       emailTextController.text, passTextController.text);
 
-      if (userId == -2) {
-        AuthMessageDlg(
-            context, 'No connection to server... \n😑', "Try again later!");
-      } else if (userId == -1) {
-        AuthMessageDlg(context, "User already exists.", "Login!");
-        //widget.tabController.animateTo(0);
-      } else {
-        AuthMessageDlg(context, "User succesfully registered.", "Login!");
-        //widget.tabController.animateTo(0);
-      }
-    }
+    //   if (userId == -2) {
+    //     AuthMessageDlg(
+    //         context, 'No connection to server... \n😑', "Try again later!");
+    //   } else if (userId == -1) {
+    //     AuthMessageDlg(context, "User already exists.", "Login!");
+    //     //widget.tabController.animateTo(0);
+    //   } else {
+    //     AuthMessageDlg(context, "User succesfully registered.", "Login!");
+    //     //widget.tabController.animateTo(0);
+    //   }
+    // }
   }
 
-  Widget _buildSigninBtn() {
+  Widget _buildLoginBtn() {
     return GestureDetector(
-      onTap: () => {Navigator.pushNamed(context, '/signup')},
+      onTap: () => {Navigator.pushNamed(context, '/login')},
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Container(
           padding: const EdgeInsets.only(
@@ -362,21 +180,9 @@ class _SignUpPageState extends State<SignUpPage> {
          * Wenn alle notwendigkeiten eingehalten sind, wird das Passwort als gültig gekennzeichent.
          */
       widget.passwordFormatValid = true;
-      if (passTextController.text == repeatPassTextController.text) {
-        widget.passwordMatch = true;
-      } else {
-        widget.passwordMatch = false;
-      }
     } else {
       widget.passwordFormatValid = false;
       widget.passwordMatch = false;
-    }
-
-    if (focusNodeRepeatPasswordTF.hasFocus) {
-      if (passTextController.text == "" && widget.passwordFormatValid) {
-        widget.passwordFormatValid = false;
-        widget.passwordMatch = false;
-      }
     }
 
     return GestureDetector(
@@ -402,14 +208,53 @@ class _SignUpPageState extends State<SignUpPage> {
                 padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
               ),
               _buildEntryText(),
-              _buildEmailTF(),
-              _buildPassword(
-                  passTextController, repeatPassTextController, true),
-              _buildPassword(
-                  passTextController, repeatPassTextController, false),
+              EmailInputField(),
+              const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
+              PasswordInputValidaionField(),
               _buildRegisterBtn(),
-              _buildSigninBtn(),
+              _buildLoginBtn(),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildPasswordExtensionTile() {
+    return <Widget>[
+      _buildSubTile('You need at least 10 Characters', widget.hasMinLength),
+      _buildSubTile(
+          'You need at least one uppercase Letter', widget.hasUppercase),
+      _buildSubTile(
+          'You need at least one lowercase Letter', widget.hasLowerCase),
+      _buildSubTile('You need at least one Number', widget.hasDigits),
+      _buildSubTile('You need at least one Special Character',
+          widget.hasSpecialCharacters),
+    ];
+  }
+
+  Widget _buildSubTile(String text, bool fulfilled) {
+    Color color = fulfilled == false
+        ? GlobalStyleProperties.errorColor
+        : GlobalStyleProperties.mainColor;
+    Icon icon = Icon(
+      fulfilled == false ? Icons.cancel_outlined : Icons.check_circle_outline,
+      color: color,
+      size: 16,
+    );
+    return SizedBox(
+      height: 50,
+      child: ListTile(
+        minVerticalPadding: 0,
+        contentPadding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
+        dense: true,
+        leading: icon,
+        title: Transform.translate(
+          offset: const Offset(-17, 0),
+          child: Text(
+            text,
+            style:
+                TextStyle(color: color, fontFamily: 'OpenSans', fontSize: 13),
           ),
         ),
       ),
