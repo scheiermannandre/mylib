@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
 
 class EmailInputField extends StatefulWidget {
-  final TextEditingController emailText = TextEditingController();
-
-  EmailInputField({Key? key}) : super(key: key);
+  EmailInputField({Key? key, required this.textController}) : super(key: key);
+  TextEditingController textController;
 
   @override
   _EmailInputFieldState createState() => _EmailInputFieldState();
@@ -30,7 +29,7 @@ class _EmailInputFieldState extends State<EmailInputField> {
             const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
             Expanded(
               child: TextField(
-                controller: widget.emailText,
+                controller: widget.textController,
                 keyboardType: TextInputType.emailAddress,
                 style: const TextStyle(
                   color: GlobalStyleProperties.mainColor,

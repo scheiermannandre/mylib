@@ -64,15 +64,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             ),
             HeadlineText(text: "Sign In"),
             const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
-            EmailInputField(),
+            EmailInputField(textController: emailText),
             const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
-            PasswordInputField(),
+            PasswordInputField(
+              textController: passText,
+            ),
             BigRoundedButton(onpressed: () => _tryLogin(), text: "Login"),
             ClickableText(
               unclickableMessage: "Don't have an account?",
               clickableMessage: "Sign Up!",
               onTap: () => Navigator.pushReplacementNamed(context, '/signup'),
             ),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 10)),
             ClickableText(
               clickableMessage: "Forgot Password?",
               onTap: () => print('Forgot Password Button Pressed'),

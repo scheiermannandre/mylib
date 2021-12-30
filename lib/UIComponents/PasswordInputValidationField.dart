@@ -1,11 +1,12 @@
 // ignore_for_file: file_names
 
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
 import 'package:mylib/UIComponents/TextTile.dart';
 
 class PasswordInputValidaionField extends StatefulWidget {
-  final TextEditingController passwordTextController = TextEditingController();
   bool hidePassword = true;
   bool hasMinLength = false;
   bool hasDigits = false;
@@ -13,7 +14,12 @@ class PasswordInputValidaionField extends StatefulWidget {
   bool hasLowerCase = false;
   bool hasSpecialCharacters = false;
 
-  PasswordInputValidaionField({Key? key}) : super(key: key);
+  PasswordInputValidaionField({
+    Key? key,
+    required this.textController,
+  }) : super(key: key);
+  TextEditingController textController;
+  // List<String> passwordConditions;
 
   @override
   _PasswordInputValidaionFieldState createState() =>
@@ -62,7 +68,7 @@ class _PasswordInputValidaionFieldState
                 const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
                 Expanded(
                   child: TextField(
-                    controller: widget.passwordTextController,
+                    controller: widget.textController,
                     obscureText: widget.hidePassword,
                     keyboardType: TextInputType.visiblePassword,
                     style: const TextStyle(

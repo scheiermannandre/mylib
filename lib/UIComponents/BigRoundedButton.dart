@@ -6,7 +6,7 @@ import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
 class BigRoundedButton extends StatefulWidget {
   BigRoundedButton({Key? key, required this.onpressed, required this.text})
       : super(key: key);
-  Function onpressed;
+  VoidCallback onpressed;
   String text;
   @override
   _BigRoundedButtonState createState() => _BigRoundedButtonState();
@@ -28,7 +28,7 @@ class _BigRoundedButtonState extends State<BigRoundedButton> {
               borderRadius: BorderRadius.circular(30.0),
             ),
           ),
-          onPressed: () => widget.onpressed,
+          onPressed: widget.onpressed,
           child: Text(
             widget.text,
             style: const TextStyle(

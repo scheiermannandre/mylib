@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
 
 class PasswordInputField extends StatefulWidget {
-  final TextEditingController passwordTextController = TextEditingController();
-  bool hidePassword = true;
-  PasswordInputField({Key? key}) : super(key: key);
+  PasswordInputField({Key? key, required this.textController})
+      : super(key: key);
+  TextEditingController textController;
 
   @override
   _PasswordInputFieldState createState() => _PasswordInputFieldState();
 }
 
 class _PasswordInputFieldState extends State<PasswordInputField> {
+  bool hidePassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,8 +32,8 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
             const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
             Expanded(
               child: TextField(
-                controller: widget.passwordTextController,
-                obscureText: widget.hidePassword,
+                controller: widget.textController,
+                obscureText: hidePassword,
                 keyboardType: TextInputType.visiblePassword,
                 style: const TextStyle(
                   color: GlobalStyleProperties.mainColor,
@@ -49,7 +51,7 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
               onPressed: () => {
                 setState(
                   () {
-                    widget.hidePassword = !widget.hidePassword;
+                    hidePassword = !hidePassword;
                   },
                 ),
               },

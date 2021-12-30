@@ -126,9 +126,11 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               HeadlineText(text: "Sign Up"),
               const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
-              EmailInputField(),
+              EmailInputField(textController: emailTextController),
               const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
-              PasswordInputValidaionField(),
+              PasswordInputValidaionField(
+                textController: passTextController,
+              ),
               BigRoundedButton(
                   onpressed: () => _tryRegister(), text: "Register"),
               ClickableText(
