@@ -1,25 +1,21 @@
 // ignore_for_file: file_names
 
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
+import 'package:mylib/GenericClasses/PasswordValidationClasses/PasswordCondition.dart';
+import 'package:mylib/GenericClasses/PasswordValidationClasses/PasswordValidator.dart';
 import 'package:mylib/UIComponents/TextTile.dart';
 
 class PasswordInputValidaionField extends StatefulWidget {
   bool hidePassword = true;
-  bool hasMinLength = false;
-  bool hasDigits = false;
-  bool hasUppercase = false;
-  bool hasLowerCase = false;
-  bool hasSpecialCharacters = false;
 
   PasswordInputValidaionField({
     Key? key,
     required this.textController,
+    required this.passwordValidator,
   }) : super(key: key);
   TextEditingController textController;
-  // List<String> passwordConditions;
+  PasswordValidator passwordValidator;
 
   @override
   _PasswordInputValidaionFieldState createState() =>
@@ -29,6 +25,7 @@ class PasswordInputValidaionField extends StatefulWidget {
 class _PasswordInputValidaionFieldState
     extends State<PasswordInputValidaionField> with TickerProviderStateMixin {
   AnimationController? _controller;
+  FocusNode focusNode = FocusNode();
 
   bool selected = false;
   bool expanded = false;
@@ -41,12 +38,16 @@ class _PasswordInputValidaionFieldState
       duration: const Duration(milliseconds: 200),
       upperBound: 0.5,
     );
+    focusNode.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller!.dispose();
+    focusNode.dispose();
   }
 
   @override
@@ -61,18 +62,24 @@ class _PasswordInputValidaionFieldState
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.lock,
-                  color: GlobalStyleProperties.mainColor,
+                  color: _evaluateColor(),
                 ),
                 const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
                 Expanded(
                   child: TextField(
+                    onChanged: (text) => {
+                      setState(() {
+                        widget.passwordValidator.SetPassword(text);
+                      })
+                    },
+                    focusNode: focusNode,
                     controller: widget.textController,
                     obscureText: widget.hidePassword,
                     keyboardType: TextInputType.visiblePassword,
-                    style: const TextStyle(
-                      color: GlobalStyleProperties.mainColor,
+                    style: TextStyle(
+                      color: _evaluateColor(),
                       fontFamily: 'OpenSans',
                     ),
                     decoration: const InputDecoration(
@@ -93,11 +100,11 @@ class _PasswordInputValidaionFieldState
                       },
                     ),
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.remove_red_eye,
-                    color: GlobalStyleProperties.mainColor,
+                    color: _evaluateColor(),
                   ),
-                  color: GlobalStyleProperties.mainColor,
+                  //color: GlobalStyleProperties.mainColor,
                 ),
                 const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
                 RotationTransition(
@@ -133,33 +140,36 @@ class _PasswordInputValidaionFieldState
     );
   }
 
+  Color _evaluateColor() {
+    if (widget.textController.text != "") {
+      return widget.passwordValidator.IsValid
+          ? GlobalStyleProperties.mainColor
+          : GlobalStyleProperties.errorColor;
+    } else {
+      return GlobalStyleProperties.mainColor;
+    }
+  }
+
   Widget _buildPasswordConditions() {
+    List<PasswordCondition> passwordConditions =
+        widget.passwordValidator.GetConditions();
+    Column conditionColumn = Column(
+      children: [],
+    );
+
+    for (PasswordCondition condition in passwordConditions) {
+      conditionColumn.children.add(
+        TextTile(
+            icon: condition.IsFulfilled
+                ? Icons.check_circle_outline
+                : Icons.cancel_outlined,
+            text: condition.Condition,
+            color: condition.IsFulfilled ? Colors.green : Colors.red),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
-      child: Column(
-        children: [
-          TextTile(
-              icon: Icons.cancel_outlined,
-              text: '10 Characters',
-              color: Colors.red),
-          TextTile(
-              icon: Icons.cancel_outlined,
-              text: 'one uppercase Letter',
-              color: Colors.red),
-          TextTile(
-              icon: Icons.cancel_outlined,
-              text: 'one lowercase Letter',
-              color: Colors.red),
-          TextTile(
-              icon: Icons.cancel_outlined,
-              text: 'one Number',
-              color: Colors.red),
-          TextTile(
-              icon: Icons.cancel_outlined,
-              text: 'one Special Character',
-              color: Colors.red),
-        ],
-      ),
+      child: conditionColumn,
     );
   }
 }

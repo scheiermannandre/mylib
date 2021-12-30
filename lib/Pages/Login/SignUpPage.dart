@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
+import 'package:mylib/GenericClasses/PasswordValidationClasses/PasswordValidator.dart';
 import 'package:mylib/UIComponents/BigRoundedButton.dart';
 import 'package:mylib/UIComponents/ClickableText.dart';
 import 'package:mylib/UIComponents/EmailInputField.dart';
@@ -10,17 +10,10 @@ import 'package:mylib/UIComponents/HeadlineText.dart';
 import 'package:mylib/UIComponents/PasswordInputValidationField.dart';
 
 class SignUpPage extends StatefulWidget {
-  bool hasMinLength = false;
-  bool hasDigits = false;
-  bool hasUppercase = false;
-  bool hasLowerCase = false;
-  bool hasSpecialCharacters = false;
-  bool passwordFormatValid = true;
-  bool passwordMatch = true;
-
   SignUpPage({
     Key? key,
   }) : super(key: key);
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -28,6 +21,8 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passTextController = TextEditingController();
+  PasswordValidator passwordValidator = PasswordValidator(passwordLength: 10);
+
   final FocusNode focusNodePasswordTF = FocusNode();
 
   @override
@@ -80,28 +75,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.hasUppercase = passTextController.text.contains(RegExp(r'[A-Z]'));
-    widget.hasDigits = passTextController.text.contains(RegExp(r'[0-9]'));
-    widget.hasLowerCase = passTextController.text.contains(RegExp(r'[a-z]'));
-    widget.hasSpecialCharacters =
-        passTextController.text.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    widget.hasMinLength = passTextController.text.length > 10;
-
-    if ((widget.hasUppercase &&
-            widget.hasDigits &&
-            widget.hasLowerCase &&
-            widget.hasSpecialCharacters &&
-            widget.hasMinLength) ||
-        (passTextController.text.isEmpty && !focusNodePasswordTF.hasFocus)) {
-      /*
-         * Wenn alle notwendigkeiten eingehalten sind, wird das Passwort als gültig gekennzeichent.
-         */
-      widget.passwordFormatValid = true;
-    } else {
-      widget.passwordFormatValid = false;
-      widget.passwordMatch = false;
-    }
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -130,9 +103,16 @@ class _SignUpPageState extends State<SignUpPage> {
               const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
               PasswordInputValidaionField(
                 textController: passTextController,
+                passwordValidator: passwordValidator,
               ),
               BigRoundedButton(
-                  onpressed: () => _tryRegister(), text: "Register"),
+                  onpressed: () => {
+                        if (passwordValidator.IsValid)
+                          {_tryRegister()}
+                        else
+                          {print("Invalid password")}
+                      },
+                  text: "Register"),
               ClickableText(
                 unclickableMessage: "Already have an account?",
                 clickableMessage: "Login!",
