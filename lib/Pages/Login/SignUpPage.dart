@@ -51,7 +51,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _tryRegister() async {
-    //FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus();
 
     // if (passTextController.text == repeatPassTextController.text &&
     //     passTextController.text.isNotEmpty &&
@@ -110,7 +110,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         if (passwordValidator.IsValid)
                           {_tryRegister()}
                         else
-                          {print("Invalid password")}
+                          {
+                            //DoNothing
+                          }
                       },
                   text: "Register"),
               ClickableText(

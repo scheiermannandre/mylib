@@ -7,8 +7,6 @@ import 'package:mylib/GenericClasses/PasswordValidationClasses/PasswordValidator
 import 'package:mylib/UIComponents/TextTile.dart';
 
 class PasswordInputValidaionField extends StatefulWidget {
-  bool hidePassword = true;
-
   PasswordInputValidaionField({
     Key? key,
     required this.textController,
@@ -29,6 +27,8 @@ class _PasswordInputValidaionFieldState
 
   bool selected = false;
   bool expanded = false;
+  bool hidePassword = true;
+
   @override
   void initState() {
     super.initState();
@@ -76,7 +76,7 @@ class _PasswordInputValidaionFieldState
                     },
                     //focusNode: focusNode,
                     controller: widget.textController,
-                    obscureText: widget.hidePassword,
+                    obscureText: hidePassword,
                     keyboardType: TextInputType.visiblePassword,
                     style: TextStyle(
                       color: _evaluateColor(),
@@ -96,13 +96,15 @@ class _PasswordInputValidaionFieldState
                   onPressed: () => {
                     setState(
                       () {
-                        widget.hidePassword = !widget.hidePassword;
+                        hidePassword = !hidePassword;
                       },
                     ),
                   },
                   icon: Icon(
                     Icons.remove_red_eye,
-                    color: _evaluateColor(),
+                    color: hidePassword
+                        ? GlobalStyleProperties.subColor
+                        : _evaluateColor(),
                   ),
                   //color: GlobalStyleProperties.mainColor,
                 ),
@@ -112,7 +114,10 @@ class _PasswordInputValidaionFieldState
                   child: IconButton(
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    icon: const Icon(Icons.expand_more),
+                    icon: const Icon(
+                      Icons.expand_more,
+                      color: GlobalStyleProperties.subColor,
+                    ),
                     onPressed: () {
                       setState(() {
                         if (expanded) {
