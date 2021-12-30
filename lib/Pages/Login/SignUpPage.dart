@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
+import 'package:mylib/UIComponents/BigRoundedButton.dart';
+import 'package:mylib/UIComponents/ClickableText.dart';
 import 'package:mylib/UIComponents/EmailInputField.dart';
+import 'package:mylib/UIComponents/HeadlineText.dart';
 import 'package:mylib/UIComponents/PasswordInputValidationField.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -41,33 +44,6 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  Widget _buildEntryText() {
-    return const Text(
-      'Sign Up',
-      style: TextStyle(
-        color: GlobalStyleProperties.detailAndTextColor,
-        fontFamily: 'OpenSans',
-        fontSize: 30.0,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildCommonScaffold(Widget child) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: GlobalStyleProperties.boxDecorationStyle,
-          height: 60.0,
-          child: child,
-        ),
-      ],
-    );
-  }
-
   void _passwordTextChanged() {
     if (passTextController.text.isNotEmpty) {
       if (passTextController.text[passTextController.text.length - 1] == " ") {
@@ -77,32 +53,6 @@ class _SignUpPageState extends State<SignUpPage> {
         );
       }
     }
-  }
-
-  Widget _buildRegisterBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () => _tryRegister(),
-        padding: const EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: GlobalStyleProperties.mainColor,
-        child: const Text(
-          'Register',
-          style: TextStyle(
-            color: GlobalStyleProperties.detailAndTextColor,
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
-        ),
-      ),
-    );
   }
 
   Future<void> _tryRegister() async {
@@ -126,39 +76,6 @@ class _SignUpPageState extends State<SignUpPage> {
     //     //widget.tabController.animateTo(0);
     //   }
     // }
-  }
-
-  Widget _buildLoginBtn() {
-    return GestureDetector(
-      onTap: () => {Navigator.pushNamed(context, '/login')},
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(
-          padding: const EdgeInsets.only(
-            bottom: 5, // Space between underline and text
-          ),
-          child: const Text(
-            'Already have an Account?',
-            style: GlobalStyleProperties.textStyle,
-          ),
-        ),
-        const Padding(padding: EdgeInsets.fromLTRB(2.5, 0, 2.5, 0)),
-        Container(
-          padding: const EdgeInsets.only(
-            bottom: 5, // Space between underline and text
-          ),
-          decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-            color: GlobalStyleProperties.mainColor,
-            width: 1.0, // Underline thickness
-          ))),
-          child: const Text(
-            'Login!',
-            style: GlobalStyleProperties.textStyle,
-          ),
-        ),
-      ]),
-    );
   }
 
   @override
@@ -207,54 +124,19 @@ class _SignUpPageState extends State<SignUpPage> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
               ),
-              _buildEntryText(),
+              HeadlineText(text: "Sign Up"),
+              const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
               EmailInputField(),
               const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
               PasswordInputValidaionField(),
-              _buildRegisterBtn(),
-              _buildLoginBtn(),
+              BigRoundedButton(
+                  onpressed: () => _tryRegister(), text: "Register"),
+              ClickableText(
+                unclickableMessage: "Already have an account?",
+                clickableMessage: "Login!",
+                onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+              ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildPasswordExtensionTile() {
-    return <Widget>[
-      _buildSubTile('You need at least 10 Characters', widget.hasMinLength),
-      _buildSubTile(
-          'You need at least one uppercase Letter', widget.hasUppercase),
-      _buildSubTile(
-          'You need at least one lowercase Letter', widget.hasLowerCase),
-      _buildSubTile('You need at least one Number', widget.hasDigits),
-      _buildSubTile('You need at least one Special Character',
-          widget.hasSpecialCharacters),
-    ];
-  }
-
-  Widget _buildSubTile(String text, bool fulfilled) {
-    Color color = fulfilled == false
-        ? GlobalStyleProperties.errorColor
-        : GlobalStyleProperties.mainColor;
-    Icon icon = Icon(
-      fulfilled == false ? Icons.cancel_outlined : Icons.check_circle_outline,
-      color: color,
-      size: 16,
-    );
-    return SizedBox(
-      height: 50,
-      child: ListTile(
-        minVerticalPadding: 0,
-        contentPadding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
-        dense: true,
-        leading: icon,
-        title: Transform.translate(
-          offset: const Offset(-17, 0),
-          child: Text(
-            text,
-            style:
-                TextStyle(color: color, fontFamily: 'OpenSans', fontSize: 13),
           ),
         ),
       ),

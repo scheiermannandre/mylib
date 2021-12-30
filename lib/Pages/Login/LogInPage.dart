@@ -1,12 +1,13 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
-
 import 'package:mylib/GenericClasses/GlobalUserProperties.dart';
 import 'package:mylib/GenericClasses/HttpClient.dart';
 import 'package:mylib/Pages/Dialogs/AuthMessageDlg.dart';
+import 'package:mylib/UIComponents/BigRoundedButton.dart';
+import 'package:mylib/UIComponents/ClickableText.dart';
 import 'package:mylib/UIComponents/EmailInputField.dart';
+import 'package:mylib/UIComponents/HeadlineText.dart';
 import 'package:mylib/UIComponents/PasswordInputField.dart';
 
 class LoginPage extends StatefulWidget {
@@ -61,91 +62,22 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             const Padding(
               padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
             ),
-            _buildText("SignIn"),
+            HeadlineText(text: "Sign In"),
+            const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
             EmailInputField(),
             const Padding(padding: EdgeInsets.fromLTRB(0, 5, 0, 5)),
             PasswordInputField(),
-            _buildLoginBtn(),
-            _buildSignupBtn(),
-            _buildForgotPasswordBtn(),
+            BigRoundedButton(onpressed: () => _tryLogin(), text: "Login"),
+            ClickableText(
+              unclickableMessage: "Don't have an account?",
+              clickableMessage: "Sign Up!",
+              onTap: () => Navigator.pushReplacementNamed(context, '/signup'),
+            ),
+            ClickableText(
+              clickableMessage: "Forgot Password?",
+              onTap: () => print('Forgot Password Button Pressed'),
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCommonScaffold(Widget child) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: GlobalStyleProperties.boxDecorationStyle,
-          height: 60.0,
-          child: child,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildText(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        color: GlobalStyleProperties.detailAndTextColor,
-        fontFamily: 'OpenSans',
-        fontSize: 30.0,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildForgotPasswordBtn() {
-    return Container(
-      alignment: Alignment.center,
-      child: TextButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
-        child: Container(
-          padding: const EdgeInsets.only(
-            bottom: 5, // Space between underline and text
-          ),
-          decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-            color: GlobalStyleProperties.mainColor,
-            width: 1.0, // Underline thickness
-          ))),
-          child: const Text(
-            'Forgot Password?',
-            style: GlobalStyleProperties.textStyle,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoginBtn() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () => _tryLogin(),
-        padding: const EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: GlobalStyleProperties.mainColor,
-        child: const Text(
-          'LOGIN',
-          style: TextStyle(
-            color: GlobalStyleProperties.detailAndTextColor,
-            letterSpacing: 1.5,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'OpenSans',
-          ),
         ),
       ),
     );
@@ -166,38 +98,5 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         GlobalUserProperties.UserId = userId;
       }
     }
-  }
-
-  Widget _buildSignupBtn() {
-    return GestureDetector(
-      onTap: () => {Navigator.pushReplacementNamed(context, '/signup')},
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(
-          padding: const EdgeInsets.only(
-            bottom: 5, // Space between underline and text
-          ),
-          child: const Text(
-            'Don\'t have an Account?',
-            style: GlobalStyleProperties.textStyle,
-          ),
-        ),
-        const Padding(padding: EdgeInsets.fromLTRB(2.5, 0, 2.5, 0)),
-        Container(
-          padding: const EdgeInsets.only(
-            bottom: 5, // Space between underline and text
-          ),
-          decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-            color: GlobalStyleProperties.mainColor,
-            width: 1.0, // Underline thickness
-          ))),
-          child: const Text(
-            'SignUp!',
-            style: GlobalStyleProperties.textStyle,
-          ),
-        ),
-      ]),
-    );
   }
 }

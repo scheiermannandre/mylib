@@ -18,7 +18,7 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
     return Container(
       decoration: GlobalStyleProperties.boxDecorationStyle,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
