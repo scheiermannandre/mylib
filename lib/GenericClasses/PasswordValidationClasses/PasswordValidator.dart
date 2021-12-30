@@ -14,24 +14,32 @@ class PasswordValidator {
       throw InsecurePasswordLengthException(DefaultPasswordLength);
     }
     _passwordLength = passwordLength;
+    String minlengthKey = "MinLength";
+    String upperCaseKey = "UpperCase";
+    String lowerCaseKey = "LowerCase";
+    String numberKey = "Number";
+    String specialCharKey = "SpecialChar";
 
-    _passwordConditions["MinLength"] =
-        PasswordCondition(_passwordLength.toString() + " characters");
-    _passwordConditions["UpperCase"] =
-        PasswordCondition("one uppercase letter");
-    _passwordConditions["LowerCase"] =
-        PasswordCondition("one lowercase letter");
+    _passwordConditions[minlengthKey] = PasswordCondition(
+        minlengthKey, _passwordLength.toString() + " characters");
+    _passwordConditions[upperCaseKey] =
+        PasswordCondition(upperCaseKey, "one uppercase letter");
+    _passwordConditions[lowerCaseKey] =
+        PasswordCondition(lowerCaseKey, "one lowercase letter");
 
-    _passwordConditions["Number"] = PasswordCondition("one number");
-    _passwordConditions["SpecialChar"] =
-        PasswordCondition("one special character");
+    _passwordConditions[numberKey] = PasswordCondition(numberKey, "one number");
+    _passwordConditions[specialCharKey] = PasswordCondition(
+        specialCharKey, "one special character\n(  !@#\$%^&*(),.?\":{}|<>]  )");
   }
 
   late int _passwordLength;
   String _password = "";
-  final Map<String, PasswordCondition> _passwordConditions = Map();
+  final Map<String, PasswordCondition> _passwordConditions = {};
 
   bool _isValid = false;
+  bool IsPasswordEmpty() {
+    return _password == "" ? true : false;
+  }
 
   bool get HasUpperCase {
     return _passwordConditions["UpperCase"]!.IsFulfilled;
@@ -90,7 +98,7 @@ class PasswordValidator {
 
   void _verificateLength() {
     _passwordConditions["MinLength"]!.IsFulfilled =
-        _password.length > _passwordLength;
+        _password.length >= DefaultPasswordLength;
   }
 
   void _verificateUpperCase() {

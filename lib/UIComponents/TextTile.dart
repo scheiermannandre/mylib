@@ -26,10 +26,14 @@ class _TextTileState extends State<TextTile> {
             color: widget.color,
           ),
           const Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
-          Text(
-            widget.text.toString(),
-            style: TextStyle(
-                color: widget.color, fontFamily: 'OpenSans', fontSize: 13),
+          Expanded(
+            child: Text(
+              widget.text.toString(),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: TextStyle(
+                  color: widget.color, fontFamily: 'OpenSans', fontSize: 13),
+            ),
           ),
         ],
       ),

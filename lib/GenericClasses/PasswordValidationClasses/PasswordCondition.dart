@@ -1,10 +1,8 @@
 // ignore_for_file: file_names, unused_field
 
 class PasswordCondition {
-  PasswordCondition(this._conditionText);
+  PasswordCondition(this.ConditionName, this.ConditionDescription);
   bool IsFulfilled = false;
-  final String _conditionText;
-  String get Condition {
-    return _conditionText;
-  }
+  final String ConditionDescription;
+  final String ConditionName;
 }

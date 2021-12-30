@@ -25,7 +25,7 @@ class PasswordInputValidaionField extends StatefulWidget {
 class _PasswordInputValidaionFieldState
     extends State<PasswordInputValidaionField> with TickerProviderStateMixin {
   AnimationController? _controller;
-  FocusNode focusNode = FocusNode();
+  //FocusNode focusNode = FocusNode();
 
   bool selected = false;
   bool expanded = false;
@@ -38,16 +38,16 @@ class _PasswordInputValidaionFieldState
       duration: const Duration(milliseconds: 200),
       upperBound: 0.5,
     );
-    focusNode.addListener(() {
-      setState(() {});
-    });
+    // focusNode.addListener(() {
+    //   setState(() {});
+    // });
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller!.dispose();
-    focusNode.dispose();
+    //focusNode.dispose();
   }
 
   @override
@@ -74,7 +74,7 @@ class _PasswordInputValidaionFieldState
                         widget.passwordValidator.SetPassword(text);
                       })
                     },
-                    focusNode: focusNode,
+                    //focusNode: focusNode,
                     controller: widget.textController,
                     obscureText: widget.hidePassword,
                     keyboardType: TextInputType.visiblePassword,
@@ -141,12 +141,12 @@ class _PasswordInputValidaionFieldState
   }
 
   Color _evaluateColor() {
-    if (widget.textController.text != "") {
+    if (widget.passwordValidator.IsPasswordEmpty()) {
+      return GlobalStyleProperties.mainColor;
+    } else {
       return widget.passwordValidator.IsValid
           ? GlobalStyleProperties.mainColor
           : GlobalStyleProperties.errorColor;
-    } else {
-      return GlobalStyleProperties.mainColor;
     }
   }
 
@@ -163,7 +163,7 @@ class _PasswordInputValidaionFieldState
             icon: condition.IsFulfilled
                 ? Icons.check_circle_outline
                 : Icons.cancel_outlined,
-            text: condition.Condition,
+            text: condition.ConditionDescription,
             color: condition.IsFulfilled ? Colors.green : Colors.red),
       );
     }
