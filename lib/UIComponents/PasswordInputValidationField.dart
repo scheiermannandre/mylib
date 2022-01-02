@@ -23,8 +23,6 @@ class PasswordInputValidaionField extends StatefulWidget {
 class _PasswordInputValidaionFieldState
     extends State<PasswordInputValidaionField> with TickerProviderStateMixin {
   AnimationController? _controller;
-  //FocusNode focusNode = FocusNode();
-
   bool selected = false;
   bool expanded = false;
   bool hidePassword = true;
@@ -38,16 +36,12 @@ class _PasswordInputValidaionFieldState
       duration: const Duration(milliseconds: 200),
       upperBound: 0.5,
     );
-    // focusNode.addListener(() {
-    //   setState(() {});
-    // });
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller!.dispose();
-    //focusNode.dispose();
   }
 
   @override
@@ -74,7 +68,6 @@ class _PasswordInputValidaionFieldState
                         widget.passwordValidator.SetPassword(text);
                       })
                     },
-                    //focusNode: focusNode,
                     controller: widget.textController,
                     obscureText: hidePassword,
                     keyboardType: TextInputType.visiblePassword,

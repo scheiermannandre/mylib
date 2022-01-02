@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 
-Future AuthMessageDlg(
+Future<bool> AuthMessageDlg(
     BuildContext context, String message, String buttonText) async {
-  var information = await showDialog(
+  bool? buttonPressed = await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -45,7 +45,8 @@ Future AuthMessageDlg(
                         style: const TextStyle(color: Colors.white),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        bool pressedButton = true;
+                        Navigator.of(context).pop(pressedButton);
                       }),
                 ),
               ),
@@ -55,7 +56,10 @@ Future AuthMessageDlg(
       );
     },
   );
-  return information;
+  if (buttonPressed != null) {
+    return buttonPressed;
+  }
+  return false;
   // if (information == "close") {
   //   Navigator.of(context, rootNavigator: true).pop();
   // }

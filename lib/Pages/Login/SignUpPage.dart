@@ -1,8 +1,17 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
+import 'package:mylib/GenericClasses/GlobalServerProperties.dart';
+import 'package:mylib/GenericClasses/HTTPClientClasses/HTTPClient.dart';
+import 'package:mylib/GenericClasses/MyLibRequestResults/UserExistsResponse.dart';
+import 'package:mylib/GenericClasses/MyLibRequestResults/UserRegisteredResponse.dart';
 import 'package:mylib/GenericClasses/PasswordValidationClasses/PasswordValidator.dart';
+import 'package:mylib/GenericClasses/UserClasses/User.dart';
+import 'package:mylib/Pages/Dialogs/AuthMessageDlg.dart';
 import 'package:mylib/UIComponents/BigRoundedButton.dart';
 import 'package:mylib/UIComponents/ClickableText.dart';
 import 'package:mylib/UIComponents/EmailInputField.dart';
@@ -28,6 +37,9 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     super.initState();
+    emailTextController.text = "hallo@gmail.com";
+    passTextController.text = "ABC123efg.";
+    passwordValidator.SetPassword(passTextController.text);
     focusNodePasswordTF.addListener(() {
       setState(() {});
     });
@@ -39,38 +51,45 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void _passwordTextChanged() {
-    if (passTextController.text.isNotEmpty) {
-      if (passTextController.text[passTextController.text.length - 1] == " ") {
-        passTextController.text = passTextController.text.trimRight();
-        passTextController.selection = TextSelection.fromPosition(
-          TextPosition(offset: passTextController.text.length),
-        );
+  Future<void> _tryRegister() async {
+    FocusScope.of(context).unfocus();
+    if (passwordValidator.IsValid) {
+      User newUser = User(emailTextController.text, passTextController.text);
+      bool userExists = await UserExists(newUser);
+      if (userExists) {
+        AuthMessageDlg(context, "User already exists!", "Ok!");
+        return;
       }
+      bool registered = await RegisterUser(newUser);
+      if (!registered) {
+        AuthMessageDlg(context, "Couldn't register User!", "Ok!");
+        return;
+      }
+      bool buttonPressed =
+          await AuthMessageDlg(context, "Successfully registered", "Login!");
+      if (buttonPressed) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+      //Map<String, dynamic> response = await HTTPClient.Post(uri, newUser.toJson());
     }
   }
 
-  Future<void> _tryRegister() async {
-    FocusScope.of(context).unfocus();
+  Future<bool> UserExists(User user) async {
+    Uri uri = GlobalServerProperties.GetUserExistUri(user.Email);
+    String responseBody = await HTTPClient.get(uri);
+    UserExistsResponse userExistsResponse =
+        UserExistsResponse.fromJSON(json.decode(responseBody));
 
-    // if (passTextController.text == repeatPassTextController.text &&
-    //     passTextController.text.isNotEmpty &&
-    //     widget.passwordFormatValid &&
-    //     widget.passwordMatch) {
-    //   int userId = await HttpCall.postRegistrationData(
-    //       emailTextController.text, passTextController.text);
+    return userExistsResponse.UserExists;
+  }
 
-    //   if (userId == -2) {
-    //     AuthMessageDlg(
-    //         context, 'No connection to server... \n😑', "Try again later!");
-    //   } else if (userId == -1) {
-    //     AuthMessageDlg(context, "User already exists.", "Login!");
-    //     //widget.tabController.animateTo(0);
-    //   } else {
-    //     AuthMessageDlg(context, "User succesfully registered.", "Login!");
-    //     //widget.tabController.animateTo(0);
-    //   }
-    // }
+  Future<bool> RegisterUser(User user) async {
+    Uri uri = GlobalServerProperties.RegisterUri;
+    String responseBody = await HTTPClient.Post(uri, user.toJson());
+    UserRegisteredResponse userRegisteredResponse =
+        UserRegisteredResponse.fromJSON(json.decode(responseBody));
+
+    return userRegisteredResponse.UserRegistered;
   }
 
   @override
