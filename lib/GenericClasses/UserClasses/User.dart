@@ -3,19 +3,19 @@
 import 'dart:convert';
 
 class User {
-  User(this.Email, this.PasswordHash, {this.Id = 0});
-  late int Id;
+  User(this.Email, this.PasswordHash, {this.UserId = 0});
+  late int UserId;
   late String Email;
   late String PasswordHash;
 
   Map<String, dynamic> toJson() => {
-        'Id': Id,
+        'UserId': UserId,
         'Email': Email,
         'PasswordHash': PasswordHash,
       };
 
   User.fromJson(Map<String, dynamic> json)
-      : Id = json['Id'],
+      : UserId = json['UserId'],
         Email = json['Email'],
         PasswordHash = json['PasswordHash'];
 

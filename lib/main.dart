@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       title: "MyLibrary",
       //initialRoute: '/login',
-      home: SignUpPage(),
+      home: LoginPage(),
       //home: value == true ? HomePage() : LoginScreen(), //LoginPage(),
       onGenerateRoute: RouteGenerator.generateRoute,
     );

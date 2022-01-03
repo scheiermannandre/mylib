@@ -3,8 +3,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 import 'package:mylib/GenericClasses/GlobalServerProperties.dart';
 import 'package:mylib/GenericClasses/HTTPClientClasses/HTTPClient.dart';
 import 'package:mylib/GenericClasses/MyLibRequestResults/UserExistsResponse.dart';
