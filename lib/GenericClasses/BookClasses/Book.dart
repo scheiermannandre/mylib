@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'dart:math';
+
 import 'package:mylib/GenericClasses/BookClasses/BookDTO.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/EmptyBookParameterException.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/InvalidBookParameterException.dart';
@@ -11,7 +13,7 @@ import 'package:mylib/GenericClasses/StaticMethodsClass.dart';
 
 /// Class to represent an instance of a book.
 class Book {
-  late int id = 0;
+  late int bookId = 0;
   late String title = "";
   late String? subTitle = "";
   late String? author = "";
@@ -20,11 +22,16 @@ class Book {
   late ReadingState readingState = ReadingStateNotStarted();
   late OwningState owningState = OwningStateWishlist();
 
+  Book(this.title, this.subTitle, this.author, this.description,
+      this.imageLink) {
+    //image = image.replaceRange(0, image.indexOf(':'), "https");
+  }
+
   ///Builder Constructor creates an inctance of Book depending on the [builder].
   ///Throws [InvalidBookParameterException] if Id not greater 0!
   ///Throws [EmptyBookParameterException] if Title is empty!
   Book._builder(BookBuilder builder) {
-    id = builder._id;
+    bookId = builder._id;
     title = builder._title;
     subTitle = builder._subTitle;
     author = builder._author;
@@ -37,7 +44,7 @@ class Book {
 
   /// Copy-Constructor creating a copied instance of a [book].
   Book.fromBook(Book book) {
-    id = book.id;
+    bookId = book.bookId;
     title = book.title;
     subTitle = book.subTitle;
     author = book.author;
@@ -50,11 +57,11 @@ class Book {
 
   /// Constructor for creating a Book instance based on the Json fetched from the DB!
   Book.fromJsonDB(Map<String, dynamic> bookJson) {
-    int? tmpId = bookJson['Id'];
-    String? tmpTitle = bookJson['Title'];
-    String? tmpReadingState = bookJson['ReadingState'];
-    String? tmpOwningState = bookJson['OwningState'];
-    id = StaticMethods.IsNull(tmpId)
+    int? tmpId = bookJson['bookId'];
+    String? tmpTitle = bookJson['title'];
+    String? tmpReadingState = bookJson['readingState'];
+    String? tmpOwningState = bookJson['owningState'];
+    bookId = StaticMethods.IsNull(tmpId)
         ? throw InvalidBookParameterException(
             "Fetched book-Json from DB doesn't contain a Id", "Id", "NULL")
         : tmpId!.toInt();
@@ -64,10 +71,10 @@ class Book {
             "Title",
             "NULL")
         : tmpTitle.toString();
-    subTitle = bookJson['SubTitle'];
-    author = bookJson['Author'];
-    description = bookJson['Description'];
-    imageLink = bookJson['ImageLink'];
+    subTitle = bookJson['subTitle'];
+    author = bookJson['author'];
+    description = bookJson['description'];
+    imageLink = bookJson['imageLink'];
     readingState = StaticMethods.IsNull(tmpReadingState)
         ? readingState
         : ReadingState.SetReadingStateFromString(tmpReadingState.toString());
@@ -77,9 +84,43 @@ class Book {
     ValidateParameter();
   }
 
+  factory Book.fromJsonAPI(Map<String, dynamic> parsedJson) {
+    if (parsedJson != null) {
+      String? title = parsedJson['title'];
+      title = title != null ? title : "";
+      String? subTitle = parsedJson['subtitle'];
+      subTitle = subTitle != null ? subTitle : "";
+      String? author = "";
+      List<dynamic>? authors = parsedJson['authors'];
+      if (authors != null) {
+        if (authors.isNotEmpty) {
+          author = authors[0];
+        }
+      } else {
+        author = "";
+      }
+      String? description = parsedJson['description'];
+      if (description == null) {
+        description = "";
+      }
+      description = description != null ? description : "";
+      Map<String, dynamic>? imageLinks = parsedJson['imageLinks'];
+      String? imageLink = "";
+      if (imageLinks != null) {
+        imageLink = imageLinks['thumbnail'];
+        imageLink = imageLink!.replaceRange(0, imageLink.indexOf(':'), "https");
+      } else {
+        imageLink = "";
+      }
+      return Book(title, subTitle, author, description, imageLink);
+    } else {
+      throw Exception("json was NULL");
+    }
+  }
+
   BookDTO ExtractBookDTO() {
     BookDTO bookDTO = BookDTO();
-    bookDTO.id = id;
+    bookDTO.id = bookId;
     bookDTO.title = title;
     bookDTO.subTitle = subTitle;
     bookDTO.author = author;
@@ -92,9 +133,9 @@ class Book {
   }
 
   void ValidateParameter() {
-    if (id <= 0) {
+    if (bookId <= 0) {
       throw InvalidBookParameterException(
-          "Id must be greater 0!", "id", id.toString());
+          "Id must be greater 0!", "id", bookId.toString());
     }
     if (title.isEmpty) {
       throw EmptyBookParameterException(

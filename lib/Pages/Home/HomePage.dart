@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
+import 'package:mylib/GenericClasses/GlobalUserProperties.dart';
+import 'package:mylib/Pages/Home/LibraryPage.dart';
 
 //shift + alt + f -> code einrücken
 //Comment Code Block Ctrl+K+C/Ctrl+K+U
@@ -33,7 +35,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-
+    GlobalUserProperties.UserId = widget.userId;
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -211,7 +213,8 @@ class _HomePageState extends State<HomePage>
                     //   // notNeededbookCollection: collection.wishlist,
                     //   isLibrary: true,
                     // ),
-                    const Text("Library"),
+                    LibraryPage(),
+                    //const Text("Library"),
                     const Text("Reading"),
                     const Text("Wishlist"),
                     // LibraryPage(

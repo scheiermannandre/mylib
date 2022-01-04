@@ -35,7 +35,7 @@ void main() {
         .buildBook();
 
     test("Test - Building via valid builder", () {
-      expect(id, book.id);
+      expect(id, book.bookId);
       expect(title, book.title);
       expect(subTitle, book.subTitle);
       expect(author, book.author);
@@ -58,7 +58,7 @@ void main() {
     });
     test("Test - Building via Copy-Constructor", () {
       final bookCopy = Book.fromBook(book);
-      expect(id, bookCopy.id);
+      expect(id, bookCopy.bookId);
       expect(title, bookCopy.title);
       expect(subTitle, bookCopy.subTitle);
       expect(author, bookCopy.author);
@@ -74,7 +74,7 @@ void main() {
               "\"Author\":\"Me\",\"Description\":\"Testing the Library API\"," +
               "\"ImageLink\":\"https://notavailable.de\",\"ReadingState\":\"ReadingStateNotStarted\",\"OwningState\":\"OwningStateWishlist\"}");
       final bookFromJson = Book.fromJsonDB(bookJson);
-      expect(bookJson["Id"], bookFromJson.id);
+      expect(bookJson["Id"], bookFromJson.bookId);
       expect(bookJson["Title"], bookFromJson.title);
       expect(bookJson["SubTitle"], bookFromJson.subTitle);
       expect(bookJson["Author"], bookFromJson.author);
@@ -120,7 +120,7 @@ void main() {
 
       final Book bookFromJson = Book.fromJsonDB(bookJson);
 
-      expect(bookJson["Id"], bookFromJson.id);
+      expect(bookJson["Id"], bookFromJson.bookId);
       expect(bookJson["Title"], bookFromJson.title);
       expect(null, bookFromJson.subTitle);
       expect(null, bookFromJson.author);
