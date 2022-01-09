@@ -9,7 +9,7 @@ class OwningStateLibrary extends OwningState {
   @override
   void AddToLibrary(Book book) {
     throw BookAlreadyInLibraryException(
-        "Book: " + book.bookId.toString() + " is already in the library!");
+        "Book: " + book.itemId.toString() + " is already in the library!");
   }
 
   @override

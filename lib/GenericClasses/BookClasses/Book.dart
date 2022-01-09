@@ -1,10 +1,10 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
-import 'dart:math';
-
 import 'package:mylib/GenericClasses/BookClasses/BookDTO.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/EmptyBookParameterException.dart';
 import 'package:mylib/GenericClasses/BookClasses/Exceptions/InvalidBookParameterException.dart';
+import 'package:mylib/GenericClasses/DbItemClasses/DbItem.dart';
+import 'package:mylib/GenericClasses/GlobalUserProperties.dart';
 import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningState.dart';
 import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateWishlist.dart';
 import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingState.dart';
@@ -12,8 +12,7 @@ import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingStateNotSt
 import 'package:mylib/GenericClasses/StaticMethodsClass.dart';
 
 /// Class to represent an instance of a book.
-class Book {
-  late int bookId = 0;
+class Book extends DbItem {
   late String title = "";
   late String? subTitle = "";
   late String? author = "";
@@ -22,16 +21,15 @@ class Book {
   late ReadingState readingState = ReadingStateNotStarted();
   late OwningState owningState = OwningStateWishlist();
 
-  Book(this.title, this.subTitle, this.author, this.description,
-      this.imageLink) {
-    //image = image.replaceRange(0, image.indexOf(':'), "https");
-  }
+  Book(int itemId, int userId, this.title, this.subTitle, this.author,
+      this.description, this.imageLink)
+      : super(itemId, userId);
 
   ///Builder Constructor creates an inctance of Book depending on the [builder].
   ///Throws [InvalidBookParameterException] if Id not greater 0!
   ///Throws [EmptyBookParameterException] if Title is empty!
-  Book._builder(BookBuilder builder) {
-    bookId = builder._id;
+  Book._builder(BookBuilder builder) : super(builder._itemId, builder._userId) {
+    itemId = builder._itemId;
     title = builder._title;
     subTitle = builder._subTitle;
     author = builder._author;
@@ -43,8 +41,7 @@ class Book {
   }
 
   /// Copy-Constructor creating a copied instance of a [book].
-  Book.fromBook(Book book) {
-    bookId = book.bookId;
+  Book.fromBook(Book book) : super(book.itemId, book.userId) {
     title = book.title;
     subTitle = book.subTitle;
     author = book.author;
@@ -56,15 +53,12 @@ class Book {
   }
 
   /// Constructor for creating a Book instance based on the Json fetched from the DB!
-  Book.fromJsonDB(Map<String, dynamic> bookJson) {
-    int? tmpId = bookJson['bookId'];
+  Book.fromJsonDB(Map<String, dynamic> bookJson) : super.fromJson(bookJson) {
+    //int? tmpId = bookJson['bookId'];
     String? tmpTitle = bookJson['title'];
     String? tmpReadingState = bookJson['readingState'];
     String? tmpOwningState = bookJson['owningState'];
-    bookId = StaticMethods.IsNull(tmpId)
-        ? throw InvalidBookParameterException(
-            "Fetched book-Json from DB doesn't contain a Id", "Id", "NULL")
-        : tmpId!.toInt();
+
     title = StaticMethods.IsNull(tmpTitle)
         ? throw InvalidBookParameterException(
             "Fetched book-Json from DB doesn't contain a title",
@@ -112,15 +106,28 @@ class Book {
       } else {
         imageLink = "";
       }
-      return Book(title, subTitle, author, description, imageLink);
+      return Book(0, 0, title, subTitle, author, description, imageLink);
     } else {
       throw Exception("json was NULL");
     }
   }
 
+  @override
+  Map<String, dynamic> toJson() => {
+        'bookId': itemId,
+        'userId': GlobalUserProperties.UserId,
+        'title': title,
+        'subTitle': subTitle,
+        'author': author,
+        'description': description,
+        'imageLink': imageLink,
+        'readingState': readingState.toString(),
+        'owningState': owningState.toString(),
+      };
+
   BookDTO ExtractBookDTO() {
     BookDTO bookDTO = BookDTO();
-    bookDTO.id = bookId;
+    bookDTO.id = itemId;
     bookDTO.title = title;
     bookDTO.subTitle = subTitle;
     bookDTO.author = author;
@@ -133,10 +140,10 @@ class Book {
   }
 
   void ValidateParameter() {
-    if (bookId <= 0) {
-      throw InvalidBookParameterException(
-          "Id must be greater 0!", "id", bookId.toString());
-    }
+    // if (itemId <= 0) {
+    //   throw InvalidBookParameterException(
+    //       "Id must be greater 0!", "id", itemId.toString());
+    // }
     if (title.isEmpty) {
       throw EmptyBookParameterException(
         "Title must not be empty!",
@@ -167,7 +174,8 @@ class Book {
 }
 
 class BookBuilder {
-  late int _id;
+  late int _itemId;
+  late int _userId;
   late String _title = "";
   late String _subTitle = "";
   late String _author = "";
@@ -178,8 +186,13 @@ class BookBuilder {
 
   BookBuilder();
 
-  BookBuilder setId(int id) {
-    _id = id;
+  BookBuilder setItemId(int id) {
+    _itemId = id;
+    return this;
+  }
+
+  BookBuilder setUserId(int id) {
+    _userId = id;
     return this;
   }
 

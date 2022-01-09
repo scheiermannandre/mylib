@@ -5,14 +5,17 @@ import 'package:mylib/GenericClasses/BookClasses/Book.dart';
 
 class BookPreviewTile extends StatefulWidget {
   final Book book;
-  final VoidCallback onAddPress;
+  final VoidCallback onAddToLibPress;
+  final VoidCallback onAddToWishlistPress;
+
   final VoidCallback onShowDetailsPress;
   //final Function onPicTureTab;
 
   BookPreviewTile({
     Key? key,
     required this.book,
-    required this.onAddPress,
+    required this.onAddToLibPress,
+    required this.onAddToWishlistPress,
     required this.onShowDetailsPress,
     //this.onPicTureTab,
   }) : super(key: key);
@@ -121,12 +124,12 @@ class _BookPreviewTileState extends State<BookPreviewTile> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.library_books_outlined),
-                        onPressed: widget.onAddPress,
+                        onPressed: widget.onAddToLibPress,
                         color: green,
                       ),
                       IconButton(
                         icon: Icon(Icons.shopping_cart_outlined),
-                        onPressed: widget.onAddPress,
+                        onPressed: widget.onAddToWishlistPress,
                         color: green,
                       ),
                     ],
@@ -137,7 +140,7 @@ class _BookPreviewTileState extends State<BookPreviewTile> {
             Container(
               padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               child: IconButton(
-                onPressed: () => {},
+                onPressed: widget.onShowDetailsPress,
                 icon: Icon(
                   Icons.arrow_forward_ios_sharp,
                   color: green,

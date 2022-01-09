@@ -24,7 +24,7 @@ void main() {
     OwningState owningState = OwningStateWishlist();
 
     final Book book = BookBuilder()
-        .setId(id)
+        .setItemId(id)
         .setTitle(title)
         .setSubTitle(subTitle)
         .setAuthor(author)
@@ -35,7 +35,7 @@ void main() {
         .buildBook();
 
     test("Test - Building via valid builder", () {
-      expect(id, book.bookId);
+      expect(id, book.userId);
       expect(title, book.title);
       expect(subTitle, book.subTitle);
       expect(author, book.author);
@@ -46,19 +46,19 @@ void main() {
     });
 
     test("Test - Building with invalid id", () {
-      expect(() => BookBuilder().setId(-1).buildBook(),
+      expect(() => BookBuilder().setItemId(-1).buildBook(),
           throwsA(const TypeMatcher<InvalidBookParameterException>()));
-      expect(() => BookBuilder().setId(0).buildBook(),
+      expect(() => BookBuilder().setItemId(0).buildBook(),
           throwsA(const TypeMatcher<InvalidBookParameterException>()));
     });
 
     test("Test - Building with empty title", () {
-      expect(() => BookBuilder().setId(1).buildBook(),
+      expect(() => BookBuilder().setItemId(1).buildBook(),
           throwsA(const TypeMatcher<EmptyBookParameterException>()));
     });
     test("Test - Building via Copy-Constructor", () {
       final bookCopy = Book.fromBook(book);
-      expect(id, bookCopy.bookId);
+      expect(id, bookCopy.userId);
       expect(title, bookCopy.title);
       expect(subTitle, bookCopy.subTitle);
       expect(author, bookCopy.author);
@@ -74,7 +74,7 @@ void main() {
               "\"Author\":\"Me\",\"Description\":\"Testing the Library API\"," +
               "\"ImageLink\":\"https://notavailable.de\",\"ReadingState\":\"ReadingStateNotStarted\",\"OwningState\":\"OwningStateWishlist\"}");
       final bookFromJson = Book.fromJsonDB(bookJson);
-      expect(bookJson["Id"], bookFromJson.bookId);
+      expect(bookJson["Id"], bookFromJson.userId);
       expect(bookJson["Title"], bookFromJson.title);
       expect(bookJson["SubTitle"], bookFromJson.subTitle);
       expect(bookJson["Author"], bookFromJson.author);
@@ -120,7 +120,7 @@ void main() {
 
       final Book bookFromJson = Book.fromJsonDB(bookJson);
 
-      expect(bookJson["Id"], bookFromJson.bookId);
+      expect(bookJson["Id"], bookFromJson.userId);
       expect(bookJson["Title"], bookFromJson.title);
       expect(null, bookFromJson.subTitle);
       expect(null, bookFromJson.author);

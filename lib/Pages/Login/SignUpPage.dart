@@ -83,7 +83,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<bool> RegisterUser(User user) async {
     Uri uri = GlobalServerProperties.RegisterUri;
-    String responseBody = await HTTPClient.Post(uri, user.toJson());
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    String body = encoder.convert(user.toJson());
+    String responseBody = await HTTPClient.Post(uri, body);
     UserRegisteredResponse userRegisteredResponse =
         UserRegisteredResponse.fromJSON(json.decode(responseBody));
 

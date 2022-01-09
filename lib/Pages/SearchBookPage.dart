@@ -9,6 +9,10 @@ import 'package:mylib/GenericClasses/BookClasses/Book.dart';
 import 'package:mylib/GenericClasses/GlobalServerProperties.dart';
 import 'package:mylib/GenericClasses/GlobalStyleProperties.dart';
 import 'package:mylib/GenericClasses/HTTPClientClasses/HTTPClient.dart';
+import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateLibrary.dart';
+import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateWishlist.dart';
+import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingStateNotStarted.dart';
+import 'package:mylib/Pages/Dialogs/AddBookDlg.dart';
 import 'package:mylib/UIComponents/BookPreviewTile.dart';
 import 'package:mylib/UIComponents/SnackBar.dart';
 
@@ -22,7 +26,8 @@ class SearchBookPage extends StatefulWidget {
 
 class _SearchBookPageState extends State<SearchBookPage>
     with TickerProviderStateMixin {
-  List<Book> books = [];
+  List<Book> foundBooks = [];
+  List<Book> addedBooks = [];
 
   //BookCollection collection = new BookCollection();
 
@@ -94,6 +99,17 @@ class _SearchBookPageState extends State<SearchBookPage>
         child: Scaffold(
           backgroundColor: GlobalStyleProperties.subColor,
           appBar: AppBar(
+            actions: [
+              Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Icon(
+                      Icons.storage_rounded,
+                      size: 26.0,
+                    ),
+                  )),
+            ],
             toolbarHeight: 75,
             backgroundColor: GlobalStyleProperties.mainColor,
             title: Container(
@@ -152,7 +168,7 @@ class _SearchBookPageState extends State<SearchBookPage>
                           child: CircularProgressIndicator(),
                         )
                       : ListView.separated(
-                          itemCount: books.length,
+                          itemCount: foundBooks.length,
                           padding: const EdgeInsets.fromLTRB(7.5, 5, 7.5, 5),
                           separatorBuilder: (BuildContext context, int index) {
                             return const Divider(height: 10);
@@ -161,15 +177,49 @@ class _SearchBookPageState extends State<SearchBookPage>
                             return Column(
                               children: <Widget>[
                                 BookPreviewTile(
-                                  book: books[index],
-                                  onAddPress: () {
-                                    _awaitReturnValueFromwhereToPutDlg(
-                                        context, index);
+                                  book: foundBooks[index],
+                                  onAddToLibPress: () async {
+                                    bool result = await MakeDecisionDlg(
+                                        context, "Add Book to Library?");
+                                    if (result) {
+                                      Book newBook = foundBooks[index];
+                                      newBook.readingState =
+                                          ReadingStateNotStarted();
+                                      newBook.owningState =
+                                          OwningStateLibrary();
+                                      addedBooks.add(newBook);
+                                      CustomSnackbar.showSnackBar(
+                                          context, "Added Book to cache!");
+                                    }
+                                    // _awaitReturnValueFromwhereToPutDlg(
+                                    //     context, index);
+                                  },
+                                  onAddToWishlistPress: () async {
+                                    bool result = await MakeDecisionDlg(
+                                        context, "Add Book to Wishlist?");
+                                    if (result) {
+                                      Book newBook = foundBooks[index];
+                                      newBook.readingState =
+                                          ReadingStateNotStarted();
+                                      newBook.owningState =
+                                          OwningStateWishlist();
+                                      addedBooks.add(newBook);
+                                      CustomSnackbar.showSnackBar(
+                                          context, "Added Book to cache!");
+                                    }
                                   },
                                   onShowDetailsPress: () async {
                                     final result = await Navigator.of(context)
                                         .pushNamed('/details',
-                                            arguments: books[index]);
+                                            arguments: foundBooks[index]);
+                                    if (result == null) {
+                                      return;
+                                    }
+
+                                    Book newBook = result as Book;
+                                    addedBooks.add(newBook);
+                                    CustomSnackbar.showSnackBar(
+                                        context, "Added Book to cache!");
                                   },
                                 ),
                               ],
@@ -274,65 +324,64 @@ class _SearchBookPageState extends State<SearchBookPage>
         ),
       ),
       onWillPop: () async {
-        Navigator.of(context).pop(books);
+        Navigator.of(context).pop(addedBooks);
         return false;
       },
     );
   }
 
-  void _awaitReturnValueFromwhereToPutDlg(
-      BuildContext context, int index) async {
-    //final result = await addBookDlg(context);
+  // void _awaitReturnValueFromwhereToPutDlg(
+  //     BuildContext context, int index) async {
+  //   final result = await addBookDlg(context);
 
-    // try {
-    //   if (result != "Cancel") {
-    //     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+  //   try {
+  //     if (result == "Cancel") {
+  //       return;
+  //     }
+  //     if (result) const JsonEncoder encoder = JsonEncoder.withIndent('  ');
 
-    //     var resBody = {};
-    //     resBody["title"] = bookBooks[index].title;
-    //     resBody["subtitle"] = bookBooks[index].subTitle;
-    //     resBody["author"] = bookBooks[index].author;
-    //     resBody["description"] = bookBooks[index].description;
-    //     resBody["imagelink"] = bookBooks[index].imageLink;
-    //     resBody["state"] = "Status.notStarted";
-    //     if (result == "Library") {
-    //       CustomSnackbar.showSnackBar(context, "Saving in Library");
-    //       //collection.addToLibrary(books[index]);
-    //       resBody["wishlib"] = "WishLib.library";
-    //     } else if (result == "Wishlist") {
-    //       CustomSnackbar.showSnackBar(context, "Saving in Wishlist");
-    //       //collection.addToWishlist(books[index]);
-    //       resBody["wishlib"] = "WishLib.wishList";
-    //     }
+  //     var resBody = {};
+  //     resBody["title"] = foundBooks[index].title;
+  //     resBody["subtitle"] = foundBooks[index].subTitle;
+  //     resBody["author"] = foundBooks[index].author;
+  //     resBody["description"] = foundBooks[index].description;
+  //     resBody["imagelink"] = foundBooks[index].imageLink;
+  //     resBody["state"] = "Status.notStarted";
+  //     if (result == "Library") {
+  //       CustomSnackbar.showSnackBar(context, "Saving in Library");
+  //       //collection.addToLibrary(books[index]);
+  //       resBody["wishlib"] = "WishLib.library";
+  //     } else if (result == "Wishlist") {
+  //       CustomSnackbar.showSnackBar(context, "Saving in Wishlist");
+  //       //collection.addToWishlist(books[index]);
+  //       resBody["wishlib"] = "WishLib.wishList";
+  //     }
 
-    //     String str = encoder.convert(resBody);
-    //     print(str);
+  //     String str = encoder.convert(resBody);
+  //     print(str);
 
-    //     final jsonResponse = await http.post(
-    //         "http://192.168.0.6:5000/books/" +
-    //             GlobalVariables.userId.toString(),
-    //         body: str,
-    //         headers: {
-    //           "accept": "application/json",
-    //           "content-type": "application/json"
-    //         });
+  //     // final jsonResponse = await http.post(
+  //     //     "http://192.168.0.6:5000/books/" +
+  //     //         GlobalVariables.userId.toString(),
+  //     //     body: str,
+  //     //     headers: {
+  //     //       "accept": "application/json",
+  //     //       "content-type": "application/json"
+  //     //     });
 
-    //     String body = jsonResponse.body;
-    //     JsonDecoder decoder = JsonDecoder();
-    //     Map<dynamic, dynamic> json = decoder.convert(body);
-    //     print(json);
-    //   } else {
-    //     print("do nothing");
-    //   }
-    // } catch (e) {
-    //   print(e);
-    // }
-    // setState(() {});
-  }
+  //     // String body = jsonResponse.body;
+  //     // JsonDecoder decoder = JsonDecoder();
+  //     // Map<dynamic, dynamic> json = decoder.convert(body);
+  //     print(json);
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  //   setState(() {});
+  // }
 
   void fetchBooksFromGoogle(String searchFor) async {
     FocusScope.of(context).unfocus();
-    books.clear();
+    foundBooks.clear();
     isLoading = true;
     searchStarted = true;
     String jsonResponse = await HTTPClient.get(
@@ -343,7 +392,7 @@ class _SearchBookPageState extends State<SearchBookPage>
     List<dynamic> list = jsonBody['items'] as List;
     List<Book> tmpBooks = [];
     list.forEach((element) {
-      books.add(Book.fromJsonAPI(element['volumeInfo']));
+      foundBooks.add(Book.fromJsonAPI(element['volumeInfo']));
     });
 
     // list.forEach((element) {

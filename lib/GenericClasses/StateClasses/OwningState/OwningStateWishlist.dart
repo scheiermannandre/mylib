@@ -14,6 +14,6 @@ class OwningStateWishlist extends OwningState {
   @override
   void AddToWishlist(Book book) {
     throw BookAlreadyInLibraryException(
-        "Book: " + book.bookId.toString() + " is already in the wishlist!");
+        "Book: " + book.itemId.toString() + " is already in the wishlist!");
   }
 }

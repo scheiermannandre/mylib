@@ -81,7 +81,7 @@ class _BookGridCardLibraryState extends State<BookGridCardLibrary>
 
     author ??= "";
     subTitle ??= "";
-    imageStr = "";
+    //imageStr = "";
     if (imageStr == null || imageStr == "") {
       image = const AssetImage('assets/images/NoPicture.png');
     } else {
@@ -140,39 +140,10 @@ class _BookGridCardLibraryState extends State<BookGridCardLibrary>
                   children: <Widget>[
                     IgnorePointer(
                       child: Container(
-                        // comment or change to transparent color
-                        // color: Colors.red,
                         height: 75.0,
                         width: 250.0,
                       ),
                     ),
-                    // Transform.translate(
-                    //   offset: Offset.fromDirection(getRadiansFromDegree(270),
-                    //       degOneTranslationAnimation.value * 55),
-                    //   child: Transform(
-                    //     transform: Matrix4.rotationX(
-                    //         getRadiansFromDegree(rotationAnimation.value))
-                    //       ..scale(degOneTranslationAnimation.value),
-                    //     alignment: Alignment.center,
-                    //     child: CircleAvatar(
-                    //       radius: 20,
-                    //       backgroundColor: green,
-                    //       child: IconButton(
-                    //         iconSize: 25,
-                    //         icon: Icon(
-                    //           Icons.show_chart_rounded,
-                    //           color: Colors.white,
-                    //         ),
-                    //         onPressed: () {
-                    //           widget.onStatisticsPress();
-                    //           if (animationController.isCompleted) {
-                    //             animationController.reverse();
-                    //           }
-                    //         },
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     Transform.translate(
                       offset: Offset.fromDirection(getRadiansFromDegree(270),
                           degTwoTranslationAnimation.value * 45),

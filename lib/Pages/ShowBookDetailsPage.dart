@@ -3,6 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mylib/GenericClasses/BookClasses/Book.dart';
+import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningState.dart';
+import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateLibrary.dart';
+import 'package:mylib/GenericClasses/StateClasses/OwningState/OwningStateWishlist.dart';
+import 'package:mylib/GenericClasses/StateClasses/ReadingState/ReadingStateNotStarted.dart';
+import 'package:mylib/Pages/Dialogs/AddBookDlg.dart';
+import 'package:mylib/Pages/Dialogs/WhereToAddBookDlg.dart';
 
 class ShowBookDetailsPage extends StatefulWidget {
   Book book;
@@ -161,7 +167,20 @@ class _ShowBookDetailsPageState extends State<ShowBookDetailsPage>
             Padding(
                 padding: EdgeInsets.only(right: 20.0),
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () async {
+                    OwningState? result = await WhereToAddBookDlg(context);
+                    if (result == null) {
+                      return;
+                    }
+                    Book newBook = widget.book;
+                    newBook.readingState = ReadingStateNotStarted();
+                    if (result.toString() == OwningStateWishlist().toString()) {
+                      newBook.owningState = OwningStateWishlist();
+                    } else {
+                      newBook.owningState = OwningStateLibrary();
+                    }
+                    Navigator.of(context).pop(newBook);
+                  },
                   child: Icon(Icons.add),
                 )),
           ],
@@ -218,7 +237,20 @@ class _ShowBookDetailsPageState extends State<ShowBookDetailsPage>
             child: FloatingActionButton.extended(
               backgroundColor: green,
               foregroundColor: Colors.white,
-              onPressed: () {},
+              onPressed: () async {
+                OwningState? result = await WhereToAddBookDlg(context);
+                if (result == null) {
+                  return;
+                }
+                Book newBook = widget.book;
+                newBook.readingState = ReadingStateNotStarted();
+                if (result.toString() == OwningStateWishlist().toString()) {
+                  newBook.owningState = OwningStateWishlist();
+                } else {
+                  newBook.owningState = OwningStateLibrary();
+                }
+                Navigator.of(context).pop(newBook);
+              },
               icon: Icon(
                 Icons.add,
                 color: Colors.white,
